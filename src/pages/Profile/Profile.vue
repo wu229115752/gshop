@@ -1,27 +1,23 @@
 <template>
-  <div class="profile">
-    <header class="header">
-      <a class="header_title">
-        <span class="header_title_text">我的</span>
-      </a>
-    </header>
+  <section class="profile">
+    <HeaderTop title="我的"/>
     <section class="profile-number">
-      <router-link to="/login" class="profile-link">
+      <router-link :to="userInfo._id ? '/userinfo': '/login'" class="profile-link">
         <div class="profile_image">
           <i class="iconfont icon-person"></i>
         </div>
         <div class="user-info">
-          <p class="user-info-top">登录/注册</p>
+          <p class="user-info-top" v-if="!userInfo.phone">{{userInfo.name || '登录/注册'}}</p>
           <p>
                 <span class="user-icon">
                   <i class="iconfont icon-shouji icon-mobile"></i>
                 </span>
-            <span class="icon-mobile-number">暂无绑定手机号</span>
+            <span class="icon-mobile-number">{{userInfo.phone || '暂无绑定手机号'}}</span>
           </p>
         </div>
         <span class="arrow">
-              <i class="iconfont icon-jiantou1"></i>
-            </span>
+          <i class="iconfont icon-jiantou1"></i>
+        </span>
       </router-link>
     </section>
     <section class="profile_info_data border-1px">
@@ -92,12 +88,47 @@
         </div>
       </a>
     </section>
-  </div>
+
+    <section class="profile_my_order border-1px">
+      <mt-button type="danger" style="width: 100%" v-if="userInfo._id" @click="logout">退出登陆</mt-button>
+<!--      <button style="width: 100%;height: 40px; font-size: 20px; background-color: red;color: white;border: red" v-if="userInfo._id" @click="logout">退出登陆</button>-->
+    </section>
+  </section>
 </template>
 
 <script>
+import {mapState} from 'vuex'
+import { MessageBox, Toast } from 'mint-ui'
+import HeaderTop from '../../components/HeaderTop/HeaderTop.vue'
 export default {
-  name: 'FooterGuide'
+  computed: {
+    ...mapState(['userInfo'])
+  },
+  methods: {
+    logout () {
+      console.log(1)
+      // alert('确定退出吗？', () => {
+      //   // 请求退出
+      //   this.$store.dispatch('logout')
+      //   console.log(2)
+      //   Toast('登出完成')
+      // })
+      MessageBox.confirm('确认退出吗?').then(
+        action => {
+          // 请求退出
+          this.$store.dispatch('logout')
+          Toast('登出完成')
+        },
+        action => {
+          console.log('点击了取消')
+        }
+      )
+    }
+  },
+
+  components: {
+    HeaderTop
+  }
 }
 </script>
 
@@ -273,5 +304,4 @@ export default {
             .icon-jiantou1
               color #bbb
               font-size 10px
-
 </style>
